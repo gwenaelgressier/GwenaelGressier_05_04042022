@@ -1,23 +1,28 @@
 //accede a l'api
 fetch("http://localhost:3000/api/products")
   .then((response) => response.json())
-  .then((data) => addProducts(data[0]));
+  .then((data) => addProducts(data));
 
 function addProducts(data) {
+  //joue la boucle pour chaque array dans l'api
+  data.forEach((kanap) => {
+    const { _id, imageUrl, altTxt, name, description } = kanap;
+    /*es6 destructuring sert a eviter de refaire la meme ligne pour chaque objets
   const imageUrl = data.imageUrl;
   const altTxt = data.altTxt;
   const _id = data._id;
   const name = data.name;
-  const description = data.description;
+  const description = data.description;*/
 
-  const anchor = makeanchor(_id); //cree l'element a
-  const makearticle = document.createElement("article"); //cree l'element article
-  const img = makeimg(imageUrl, altTxt); //cree l'element img
-  const h3 = makeh3(name); //cree l'element img
-  const p = makep(description); //cree l'element img
+    const anchor = makeanchor(_id); //cree l'element a
+    const makearticle = document.createElement("article"); //cree l'element article
+    const img = makeimg(imageUrl, altTxt); //cree l'element img
+    const h3 = makeh3(name); //cree l'element img
+    const p = makep(description); //cree l'element img
 
-  appendChildanchor(anchor, makearticle); //appelle la fonction qui acroche anchor a l'id items
-  appendChildtoarticle(makearticle, img, h3, p); //appelle la fonctin qui acroche img, h3, p a l'article
+    appendChildanchor(anchor, makearticle); //appelle la fonction qui acroche anchor a l'id items
+    appendChildtoarticle(makearticle, img, h3, p); //appelle la fonctin qui acroche img, h3, p a l'article
+  });
 }
 //creation de l'element a
 function makeanchor(_id) {
