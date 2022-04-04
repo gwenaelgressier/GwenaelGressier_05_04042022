@@ -21,7 +21,7 @@ function addProducts(data) {
     const p = makep(description); //cree l'element img
 
     appendChildanchor(anchor, makearticle); //appelle la fonction qui acroche anchor a l'id items
-    appendChildtoarticle(makearticle, img, h3, p); //appelle la fonctin qui acroche img, h3, p a l'article
+    appendChildtoarticle(makearticle, [img, h3, p]); //appelle la fonctin qui acroche [img, h3, p] a l'article mis en array pour pouvoir faire que un seul appenchild
   });
 }
 //creation de l'element a
@@ -63,8 +63,6 @@ function appendChildanchor(anchor, makearticle) {
 }
 
 //accroche les img,h3 et p à mon article
-function appendChildtoarticle(makearticle, img, h3, p) {
-  makearticle.appendChild(img); //acroche l'img au arcticle
-  makearticle.appendChild(h3); //acroche l'h3 au arcticle
-  makearticle.appendChild(p); //acroche le p au arcticle
+function appendChildtoarticle(makearticle, [img, h3, p]) {
+  makearticle.appendChild([img, h3, p]); //acroche le p le h3 et img au arcticle*/
 }
