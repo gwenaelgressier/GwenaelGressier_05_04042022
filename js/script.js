@@ -4,10 +4,12 @@ fetch("http://localhost:3000/api/products")
   .then((data) => addProducts(data[0]));
 
 function addProducts(data) {
-  console.log(data._id);
+  const imageUrl = data.imageUrl;
+  const altTxt = data.altTxt;
+
   const anchor = makeanchor(); //cree l'element a
   const makearticle = document.createElement("article"); //cree l'element article
-  const img = makeimg(); //cree l'element img
+  const img = makeimg(imageUrl, altTxt); //cree l'element img
   const h3 = makeh3(); //cree l'element img
   const p = makep(); //cree l'element img
 
@@ -21,8 +23,10 @@ function makeanchor() {
 }
 
 //creation de l'element img
-function makeimg() {
+function makeimg(imageUrl, altTxt) {
   const img = document.createElement("img"); //cree l'element img
+  img.src = imageUrl; //importe le src du back
+  img.alt = altTxt; //importe  le alt du back
   return img;
 }
 
