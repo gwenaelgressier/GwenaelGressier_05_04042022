@@ -96,6 +96,10 @@ function makeSettings(div, item) {
   inputNumber.min = 1;
   inputNumber.max = 100;
   inputNumber.value = item.quantity;
+  inputNumber.addEventListener("input", () =>
+    updatePriceAndQuantity(item.id, inputNumber.value, item)
+  );
+
   div3.appendChild(inputNumber);
 
   const div4 = document.createElement("div");
@@ -107,16 +111,38 @@ function makeSettings(div, item) {
   p4.textContent = "Supprimer";
   div4.appendChild(p4);
 
-  const Quantity = document.getElementById("totalQuantity");
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
-  Quantity.textContent = totalQuantity;
+  displayTotalPrice();
+  displayTotalQuantity();
+}
 
+function updatePriceAndQuantity(id, newValue, item) {
+  const itemToUpdate = cart.find((item) => item.id === id);
+  itemToUpdate.quantity = Number(newValue);
+  item.quantity = itemToUpdate.quantity;
+  displayTotalQuantity();
+  displayTotalPrice();
+  saveNewDataToCache(item);
+}
+
+function displayTotalQuantity() {
+  const Quantity = document.getElementById("totalQuantity");
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0); //prend toute mes quantite et les additionne a la valeur total qui etait a 0
+  Quantity.textContent = totalQuantity;
+}
+
+function displayTotalPrice() {
   const price = document.getElementById("totalPrice");
   const totalprice = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
-  );
+  ); //prend toute mes prix et les multiplie a quantite et les additionne a la valeur total qui etait a 0
   price.textContent = totalprice;
+}
+
+function saveNewDataToCache(item) {
+  const dataToSave = JSON.stringify(item);
+  const key = `${item.id}-${item.color}`;
+  localStorage.setItem(key, dataToSave);
 }
 
 //fonction de suppression
