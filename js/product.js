@@ -83,7 +83,7 @@ function saveOrder(color, quantity) {
     altTxt: altText,
     name: articleName,
   }; //cree une constante avec toute les informations importante pour mon cart
-  localStorage.setItem(key, JSON.stringify(data)); //enregistre dans le cache ses info
+  localStorage.setItem(key, JSON.stringify(data)); //enregistre dans le cache ses info en transformant mon data en json
 }
 //fontion qui sert a verifier le remplissage des champ couleur et quantiter
 function isOrderInvalid(color, quantity) {
