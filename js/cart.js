@@ -2,19 +2,20 @@ const cart = []; //declare ma const cart vide pour cree une liste total du cart
 retrieveItemsFromCache(); //appelle e la fonction de recuperation des donnee
 cart.forEach((item) => displayItem(item));
 
+const orderButton = document.querySelector("#order");
+orderButton.addEventListener("click", (e) => submitForm(e)); // fait passer e pour empecher de rafraichire la page
+
 //fonction de recuperation des donne du cache
 function retrieveItemsFromCache() {
   const numberOfItems = localStorage.length; //sert a voir le nombre d'objet dans mon storage
-  console.log("le nombre d'item ajoutée est", numberOfItems);
   for (let i = 0; i < numberOfItems; i++) {
     //pour chaque items recuparere les information
-    const item = localStorage.getItem(localStorage.key(i)); //recupere les ifo du cache
+    const item = localStorage.getItem(localStorage.key(i)); //recupere les info du cache
     const itemObject = JSON.parse(item); //remet en objet les info de mon .json
     cart.push(itemObject);
   }
 }
-console.log(cart);
-
+//creation de mon article
 function displayItem(item) {
   const article = makearticle(item);
   const div = makeImageDiv(item);
@@ -24,6 +25,7 @@ function displayItem(item) {
   article.appendChild(carditemContent);
 }
 
+//creation de ma div principal
 function makeCardItemContent(item) {
   const div = document.createElement("div");
   div.classList.add("cart__item__content");
@@ -55,7 +57,6 @@ function makearticle(item) {
   article.classList.add("cart__item");
   article.dataset.id = item.id;
   article.dataset.color = item.color;
-  console.log(article);
   return article;
 }
 
@@ -106,27 +107,40 @@ function makeSettings(div, item) {
   div4.classList.add("cart__item__content__settings__delete");
   div2.appendChild(div4);
 
+  makedeletetosettings(div4, item);
+  displayTotalPrice();
+  displayTotalQuantity();
+}
+//ajoute le bouton supprimer a ma div
+function makedeletetosettings(div4, item) {
   const p4 = document.createElement("p");
   p4.classList.add("deleteItem");
   p4.textContent = "Supprimer";
   div4.appendChild(p4);
-
-  displayTotalPrice();
-  displayTotalQuantity();
+  div4.addEventListener("click", () => deleteItem(item));
 }
 
+//sert a modifier la quantiter et le prix
 function updatePriceAndQuantity(id, newValue, item) {
-  const itemToUpdate = cart.find((item) => item.id === id);
-  itemToUpdate.quantity = Number(newValue);
-  item.quantity = itemToUpdate.quantity;
+  //const itemToUpdate = cart.find((item) => item.id === id); //on va chercher l'item avec l'id
+  const itemToUpdate = item;
+  itemToUpdate.quantity = Number(newValue); // change la item.quantity par la nouvelle quantiter de l'input
+  console.log("itemToUpdate :", itemToUpdate);
+  item.quantity = itemToUpdate.quantity; // change la item.quantity par la nouvelle quantiter de l'input
   displayTotalQuantity();
   displayTotalPrice();
   saveNewDataToCache(item);
+  console.log("item:", item);
 }
 
 function displayTotalQuantity() {
   const Quantity = document.getElementById("totalQuantity");
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0); //prend toute mes quantite et les additionne a la valeur total qui etait a 0
+  const totalQuantity = cart.reduce(
+    (total, item) => (total += item.quantity),
+    0
+  ); //prend toute mes quantite et les additionne a la valeur total qui etait a 0
+  console.table(cart);
+
   Quantity.textContent = totalQuantity;
 }
 
@@ -140,12 +154,106 @@ function displayTotalPrice() {
 }
 
 function saveNewDataToCache(item) {
-  const dataToSave = JSON.stringify(item);
-  const key = `${item.id}-${item.color}`;
-  localStorage.setItem(key, dataToSave);
+  const dataToSave = JSON.stringify(item); //resave tout l'item dans le cache
+  const key = `${item.id}-${item.color}`; //ajoute la couleur a la fin de mon id
+  localStorage.setItem(key, dataToSave); //permet d'enregistrer avec l'id et la couleur
 }
 
 //fonction de suppression
+function deleteItem(item) {
+  const key = `${item.id}-${item.color}`;
+  localStorage.removeItem(key);
+  const itemToDelete = cart.findIndex(
+    (product) => product.id === item.id && product.color === item.color
+  );
+  cart.splice(itemToDelete, 1);
+  const articleToDelete = document.querySelector(
+    `article[data-id="${item.id}"][data-color="${item.color}"]`
+  );
+  articleToDelete.remove();
+  displayTotalQuantity();
+  displayTotalPrice();
+}
+
+function submitForm(e) {
+  e.preventDefault(); //empeche de rafraichire la page a chaque fois que je clique sur le bouton
+  if (cart.length === 0) {
+    alert("Le panier est vide");
+    return;
+  }
+
+  if (isFormInvalid()) return;
+  if (isEmailInvalid()) return;
+
+  const body = makeRequestBody();
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const orderId = data.orderId;
+      window.location.href = "/html/confirmation.html" + "?orderId=" + orderId;
+    })
+    .catch((err) => console.error(err));
+}
+
+function isEmailInvalid() {
+  const email = document.querySelector("#email").value;
+  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
+  if (regex.test(email) === false) {
+    alert("entrez un e-mail valide");
+    return true;
+  }
+  return false;
+}
+
+function isFormInvalid() {
+  const form = document.querySelector(".cart__order__form");
+  const inputs = form.querySelectorAll("input");
+  inputs.forEach((input) => {
+    if (input.value === "") {
+      alert("Veuillez remplir tous les champs");
+      return true;
+    }
+    return false;
+  });
+}
+
+function makeRequestBody() {
+  const form = document.querySelector(".cart__order__form");
+  const firstName = form.elements.firstName.value;
+  const lastName = form.elements.lastName.value;
+  const address = form.elements.address.value;
+  const city = form.elements.city.value;
+  const email = form.elements.email.value;
+  const body = {
+    contact: {
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      city: city,
+      email: email,
+    },
+    products: getIdsFromCache(),
+  };
+  return body;
+}
+
+function getIdsFromCache() {
+  const numberOfProducts = localStorage.length;
+  const ids = [];
+  for (let i = 0; i < numberOfProducts; i++) {
+    const key = localStorage.key(i);
+    console.log(key);
+    const id = key.split("-")[0]; //on prend l'id du produit sans la couleur
+    ids.push(id);
+  }
+  return ids;
+}
 /*
 altTxt: "Photo d'un canapé d'angle, vert, trois places"
 color: "Green"

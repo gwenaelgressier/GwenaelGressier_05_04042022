@@ -66,14 +66,13 @@ button.addEventListener("click", addToCartClick);
 function addToCartClick() {
   const color = document.querySelector("#colors").value;
   const quantity = document.querySelector("#quantity").value;
-
   if (isOrderInvalid(color, quantity)) return; //stop la fonction si isOrderInvalid est false
   saveOrder(color, quantity); //appelle ma fonction qui fait passe les info au cart
   redirectToCart();
 }
 //fonction qui fait passer mais info au cart
 function saveOrder(color, quantity) {
-  const key = `${id}-${color}`;
+  const key = `${id}-${color}`; //instercolaction de l'id et de la couleur
   const data = {
     id: id,
     color: color,
@@ -83,6 +82,7 @@ function saveOrder(color, quantity) {
     altTxt: altText,
     name: articleName,
   }; //cree une constante avec toute les informations importante pour mon cart
+
   localStorage.setItem(key, JSON.stringify(data)); //enregistre dans le cache ses info en transformant mon data en json
 }
 //fontion qui sert a verifier le remplissage des champ couleur et quantiter
