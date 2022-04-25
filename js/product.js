@@ -60,6 +60,7 @@ function makeColors(colors) {
 
 //sert a selectioner mon bouton et  a lui appliquer un event listener
 const button = document.querySelector("#addToCart");
+
 button.addEventListener("click", addToCartClick);
 
 //fonction qui selectionne mon champ couleur et quantiter si il est rempli ou vide
@@ -67,13 +68,12 @@ function addToCartClick() {
   const color = document.querySelector("#colors").value;
   const quantity = document.querySelector("#quantity").value;
   if (isOrderInvalid(color, quantity)) return; //stop la fonction si isOrderInvalid est false
-  saveOrder(color, quantity); //appelle ma fonction qui fait passe les info au cart
-  redirectToCart();
-}
-//fonction qui fait passer mais info au cart
-function saveOrder(color, quantity) {
-  const key = `${id}-${color}`; //instercolaction de l'id et de la couleur
-  const data = {
+
+  //const itemQuantity = Number(item.quantity);
+
+  let cart = [];
+  //cree une constante avec toute les informations importante du produit
+  const product = {
     id: id,
     color: color,
     quantity: Number(quantity),
@@ -81,10 +81,30 @@ function saveOrder(color, quantity) {
     imageUrl: imgUrl,
     altTxt: altText,
     name: articleName,
-  }; //cree une constante avec toute les informations importante pour mon cart
-
-  localStorage.setItem(key, JSON.stringify(data)); //enregistre dans le cache ses info en transformant mon data en json
+  };
+  //si j'ai "cart" dans mon cache
+  if (localStorage.getItem("cart")) {
+    //je lis mon cache
+    cart = JSON.parse(localStorage.getItem("cart"));
+    //cree une boucle pour verifier si mon produit est deja dans mon cart
+    for (let i = 0; i < cart.length; i++) {
+      //si mon produit a le meme id et la meme couleur
+      if (cart[i].id === product.id && cart[i].color === product.color) {
+        cart[i].quantity += product.quantity; //je rajoute la quantité
+        console.log("cart in if: ", cart);
+        return savecart(cart);
+      }
+    }
+  }
+  cart.push(product);
+  savecart(cart);
 }
+
+function savecart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  redirectToCart();
+}
+
 //fontion qui sert a verifier le remplissage des champ couleur et quantiter
 function isOrderInvalid(color, quantity) {
   if (color == null || color === "" || quantity == null || quantity == 0) {

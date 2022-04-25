@@ -53,7 +53,6 @@ function makeDescription(div, item) {
 //cree mon article
 function makearticle(item) {
   const article = document.createElement("article");
-  displayArticle(article);
   article.classList.add("cart__item");
   article.dataset.id = item.id;
   article.dataset.color = item.color;
