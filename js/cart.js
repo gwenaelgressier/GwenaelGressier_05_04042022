@@ -12,7 +12,7 @@ function retrieveItemsFromCache() {
     //pour chaque items recuparere les information
     const item = localStorage.getItem(localStorage.key(i)); //recupere les info du cache
     const itemObject = JSON.parse(item); //remet en objet les info de mon .json
-    cart.push(itemObject);
+    cart.push(...itemObject);
   }
 }
 //creation de mon article
@@ -253,11 +253,3 @@ function getIdsFromCache() {
   }
   return ids;
 }
-/*
-altTxt: "Photo d'un canapé d'angle, vert, trois places"
-color: "Green"
-id: "055743915a544fde83cfdfc904935ee7"
-imageUrl: "http://localhost:3000/images/kanap03.jpeg"
-name: "Kanap Calycé"
-price: 3199
-quantity: 4*/
