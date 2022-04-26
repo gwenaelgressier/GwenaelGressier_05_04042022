@@ -128,7 +128,7 @@ function updatePriceAndQuantity(id, newValue, item) {
   item.quantity = itemToUpdate.quantity; // change la item.quantity par la nouvelle quantiter de l'input
   displayTotalQuantity();
   displayTotalPrice();
-  saveNewDataToCache(item);
+  saveNewDataToCache();
   console.log("item:", item);
 }
 
@@ -152,10 +152,8 @@ function displayTotalPrice() {
   price.textContent = totalprice;
 }
 
-function saveNewDataToCache(item) {
-  const dataToSave = JSON.stringify(item); //resave tout l'item dans le cache
-  const key = `${item.id}-${item.color}`; //ajoute la couleur a la fin de mon id
-  localStorage.setItem(key, dataToSave); //permet d'enregistrer avec l'id et la couleur
+function saveNewDataToCache() {
+  localStorage.setItem("cart", JSON.stringify(cart)); //permet d'enregistrer avec l'id et la couleur
 }
 
 //fonction de suppression
