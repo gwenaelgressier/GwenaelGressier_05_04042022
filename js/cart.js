@@ -183,6 +183,7 @@ function submitForm(e) {
   if (isEmailInvalid()) return;
 
   const body = makeRequestBody();
+  console.log(body);
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     body: JSON.stringify(body),
@@ -237,6 +238,7 @@ function makeRequestBody() {
     },
     products: getIdsFromCache(),
   };
+  console.log(body);
   return body;
 }
 
@@ -244,10 +246,11 @@ function getIdsFromCache() {
   const numberOfProducts = localStorage.length;
   const ids = [];
   for (let i = 0; i < numberOfProducts; i++) {
-    const key = localStorage.key(i);
-    console.log(key);
-    const id = key.split("-")[0]; //on prend l'id du produit sans la couleur
-    ids.push(id);
+    const key = localStorage.getItem(localStorage.key(i)); //recupere les info du cache
+    const id = JSON.parse(key); //remet en objet les info de mon .json
+    console.log(id[i].id);
+    ids.push(id[i].id);
   }
+  console.log(ids);
   return ids;
 }
