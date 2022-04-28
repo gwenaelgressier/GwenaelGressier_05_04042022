@@ -182,8 +182,6 @@ function submitForm(e) {
   }
 
   if (isFormInvalid()) return;
-  console.log(isFormInvalid());
-  if (isEmailInvalid()) return;
 
   const body = makeRequestBody();
   console.log(body);
@@ -202,26 +200,63 @@ function submitForm(e) {
     .catch((err) => console.error(err));
 }
 
-function isEmailInvalid() {
+function isFormInvalid() {
+  const firstName = document.querySelector("#firstName").value;
+  const firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
+  const lastName = document.querySelector("#lastName").value;
+  const lastNameErrorMsg = document.querySelector("#lastNameErrorMsg");
+  const address = document.querySelector("#address").value;
+  const addressErrorMsg = document.querySelector("#addressErrorMsg");
+  const city = document.querySelector("#city").value;
+  const cityErrorMsg = document.querySelector("#cityErrorMsg");
   const email = document.querySelector("#email").value;
-  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-  if (regex.test(email) === false) {
-    alert("entrez un e-mail valide");
+  const emailErrorMsg = document.querySelector("#emailErrorMsg");
+
+  const regexform = /^[a-zA-Z ,.'-]+$/;
+  const regexAdress = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
+  const regexMail = /^[A-Za-z0-9+_.-]+@(.+)$/;
+
+  if (regexform.test(firstName) === false) {
+    firstNameErrorMsg.innerHTML = "entrez un prenom valide";
+  } else {
+    firstNameErrorMsg.innerHTML = "";
+  }
+
+  if (regexform.test(lastName) === false) {
+    lastNameErrorMsg.innerHTML = "entrez un nom valide";
+  } else {
+    lastNameErrorMsg.innerHTML = "";
+  }
+
+  if (regexAdress.test(address) === false) {
+    addressErrorMsg.innerHTML = "entrez une address valide";
+  } else {
+    addressErrorMsg.innerHTML = "";
+  }
+
+  if (regexform.test(city) === false) {
+    cityErrorMsg.innerHTML = "entrez une ville valide";
+  } else {
+    cityErrorMsg.innerHTML = "";
+  }
+
+  if (regexMail.test(email) === false) {
+    emailErrorMsg.innerHTML = "entrez un mail valide";
+  } else {
+    emailErrorMsg.innerHTML = "";
+  }
+
+  if (
+    regexform.test(firstName) === true &&
+    regexform.test(lastName) === true &&
+    regexAdress.test(address) === true &&
+    regexform.test(city) === true &&
+    regexMail.test(email) === true
+  ) {
+    return false;
+  } else {
     return true;
   }
-  return false;
-}
-
-function isFormInvalid() {
-  const form = document.querySelector(".cart__order__form");
-  const inputs = form.querySelectorAll("input");
-  inputs.forEach((input) => {
-    if (input.value === "") {
-      alert("Veuillez remplir tous les champs");
-      return true;
-    }
-    return false;
-  });
 }
 
 function makeRequestBody() {
