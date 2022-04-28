@@ -163,11 +163,13 @@ function deleteItem(item) {
   const itemToDelete = cart.findIndex(
     (product) => product.id === item.id && product.color === item.color
   );
+
   cart.splice(itemToDelete, 1);
   const articleToDelete = document.querySelector(
     `article[data-id="${item.id}"][data-color="${item.color}"]`
   );
   articleToDelete.remove();
+  saveNewDataToCache();
   displayTotalQuantity();
   displayTotalPrice();
 }
@@ -180,6 +182,7 @@ function submitForm(e) {
   }
 
   if (isFormInvalid()) return;
+  console.log(isFormInvalid());
   if (isEmailInvalid()) return;
 
   const body = makeRequestBody();
