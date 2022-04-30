@@ -91,7 +91,6 @@ function addToCartClick() {
       //si mon produit a le meme id et la meme couleur
       if (cart[i].id === product.id && cart[i].color === product.color) {
         cart[i].quantity += product.quantity; //je rajoute la quantité
-        console.log("cart in if: ", cart);
         return savecart(cart);
       }
     }
@@ -99,7 +98,7 @@ function addToCartClick() {
   cart.push(product);
   savecart(cart);
 }
-
+// ser a save mon produit dans le cash sous le nom de cart
 function savecart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
   redirectToCart();

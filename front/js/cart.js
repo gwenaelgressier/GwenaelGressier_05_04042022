@@ -33,7 +33,7 @@ function makeCardItemContent(item) {
   makeSettings(div, item);
   return div;
 }
-
+//creation de ma balise div avec h2 et p et p
 function makeDescription(div, item) {
   const description = document.createElement("div");
   description.classList.add("cart__item__content__description");
@@ -43,7 +43,7 @@ function makeDescription(div, item) {
   p.textContent = item.color;
   const p2 = document.createElement("p");
   p2.textContent = item.price + " €";
-  description.appendChild(h2, p, p2);
+  description.appendChild(h2);
   description.appendChild(p);
   description.appendChild(p2);
   div.appendChild(description);
@@ -69,13 +69,11 @@ function makeImageDiv(item) {
   div.appendChild(image);
   return image, div;
 }
-
+//affiche l'article de tous mes canapés
 function displayArticle(article) {
-  const focusIdSection = document
-    .getElementById("cart__items")
-    .appendChild(article);
+  document.getElementById("cart__items").appendChild(article);
 }
-
+//creation de la partie settings
 function makeSettings(div, item) {
   const div2 = document.createElement("div");
   div2.classList.add("cart__item__content__settings");
@@ -131,7 +129,7 @@ function updatePriceAndQuantity(id, newValue, item) {
   saveNewDataToCache();
   console.log("item:", item);
 }
-
+//affiche la quantiter total de canap dans mon cart
 function displayTotalQuantity() {
   const Quantity = document.getElementById("totalQuantity");
   const totalQuantity = cart.reduce(
@@ -142,7 +140,7 @@ function displayTotalQuantity() {
 
   Quantity.textContent = totalQuantity;
 }
-
+//affiche la somme de tout les prix de mes canaps
 function displayTotalPrice() {
   const price = document.getElementById("totalPrice");
   const totalprice = cart.reduce(
@@ -151,7 +149,7 @@ function displayTotalPrice() {
   ); //prend toute mes prix et les multiplie a quantite et les additionne a la valeur total qui etait a 0
   price.textContent = totalprice;
 }
-
+//sert a save dans le cache les nouvelle valeur quand elle sont modifier ou suprimer
 function saveNewDataToCache() {
   localStorage.setItem("cart", JSON.stringify(cart)); //permet d'enregistrer avec l'id et la couleur
 }
@@ -173,7 +171,7 @@ function deleteItem(item) {
   displayTotalQuantity();
   displayTotalPrice();
 }
-
+//sert a POST les valeur de mon forme a mon api
 function submitForm(e) {
   e.preventDefault(); //empeche de rafraichire la page a chaque fois que je clique sur le bouton
   if (cart.length === 0) {
@@ -184,7 +182,6 @@ function submitForm(e) {
   if (isFormInvalid()) return;
 
   const body = makeRequestBody();
-  console.log(body);
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     body: JSON.stringify(body),
@@ -199,7 +196,7 @@ function submitForm(e) {
     })
     .catch((err) => console.error(err));
 }
-
+//verifie si mon forme et valide avant de l'envoyer a mon api
 function isFormInvalid() {
   const firstName = document.querySelector("#firstName").value;
   const firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
@@ -258,7 +255,8 @@ function isFormInvalid() {
     return true;
   }
 }
-
+//recupere les donner de mon forme et les mes en forme pour les passer a l'api
+/*return body */
 function makeRequestBody() {
   const form = document.querySelector(".cart__order__form");
   const firstName = form.elements.firstName.value;
@@ -276,19 +274,16 @@ function makeRequestBody() {
     },
     products: getIdsFromCache(),
   };
-  console.log(body);
   return body;
 }
-
+//pour chaque canap dans mon cart recup les info et push l'id dans l'array ids
+/*return ids*/
 function getIdsFromCache() {
-  const numberOfProducts = localStorage.length;
   const ids = [];
-  for (let i = 0; i < numberOfProducts; i++) {
-    const key = localStorage.getItem(localStorage.key(i)); //recupere les info du cache
-    const id = JSON.parse(key); //remet en objet les info de mon .json
-    console.log(id[i].id);
-    ids.push(id[i].id);
-  }
-  console.log(ids);
+  cart.forEach((numberOfProducts) => {
+    localStorage.getItem(localStorage.key(numberOfProducts)); //recupere les info du cache
+    ids.push(numberOfProducts.id);
+  });
+
   return ids;
 }
