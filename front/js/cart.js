@@ -94,8 +94,9 @@ function makeSettings(div, item) {
   inputNumber.min = 1;
   inputNumber.max = 100;
   inputNumber.value = item.quantity;
+  //des que la valeur de mon input est toucher lance la function updatePriceAndQuantity
   inputNumber.addEventListener("input", () =>
-    updatePriceAndQuantity(item.id, inputNumber.value, item)
+    updatePriceAndQuantity(inputNumber.value, item)
   );
 
   div3.appendChild(inputNumber);
@@ -118,16 +119,13 @@ function makedeletetosettings(div4, item) {
 }
 
 //sert a modifier la quantiter et le prix
-function updatePriceAndQuantity(id, newValue, item) {
-  //const itemToUpdate = cart.find((item) => item.id === id); //on va chercher l'item avec l'id
+function updatePriceAndQuantity(newValue, item) {
   const itemToUpdate = item;
   itemToUpdate.quantity = Number(newValue); // change la item.quantity par la nouvelle quantiter de l'input
-  console.log("itemToUpdate :", itemToUpdate);
   item.quantity = itemToUpdate.quantity; // change la item.quantity par la nouvelle quantiter de l'input
   displayTotalQuantity();
   displayTotalPrice();
   saveNewDataToCache();
-  console.log("item:", item);
 }
 //affiche la quantiter total de canap dans mon cart
 function displayTotalQuantity() {
@@ -136,8 +134,6 @@ function displayTotalQuantity() {
     (total, item) => (total += item.quantity),
     0
   ); //prend toute mes quantite et les additionne a la valeur total qui etait a 0
-  console.table(cart);
-
   Quantity.textContent = totalQuantity;
 }
 //affiche la somme de tout les prix de mes canaps
@@ -146,7 +142,7 @@ function displayTotalPrice() {
   const totalprice = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
-  ); //prend toute mes prix et les multiplie a quantite et les additionne a la valeur total qui etait a 0
+  ); //prend toute mes prix et les multiplie a la quantite et les additionne a la valeur total qui etait a 0
   price.textContent = totalprice;
 }
 //sert a save dans le cache les nouvelle valeur quand elle sont modifier ou suprimer
@@ -156,17 +152,21 @@ function saveNewDataToCache() {
 
 //fonction de suppression
 function deleteItem(item) {
+  //cree la const key qui a l'id et la couleur
   const key = `${item.id}-${item.color}`;
-  localStorage.removeItem(key);
+  localStorage.removeItem(key); // sert a supprimer la resource avec l'id et la couleur
+  //sert a repurer l'indice de l'element a suprimer
   const itemToDelete = cart.findIndex(
     (product) => product.id === item.id && product.color === item.color
   );
 
-  cart.splice(itemToDelete, 1);
+  cart.splice(itemToDelete, 1); //suprime un element avec l'index de itemToDelete
+  //vise l'item.id et color de l'article a suprimer
   const articleToDelete = document.querySelector(
     `article[data-id="${item.id}"][data-color="${item.color}"]`
   );
-  articleToDelete.remove();
+
+  articleToDelete.remove(); //supprime l'article
   saveNewDataToCache();
   displayTotalQuantity();
   displayTotalPrice();
@@ -209,6 +209,7 @@ function isFormInvalid() {
   const email = document.querySelector("#email").value;
   const emailErrorMsg = document.querySelector("#emailErrorMsg");
 
+  //creation des mes regex
   const regexform = /^[a-zA-Z ,.'-]+$/;
   const regexAdress = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
   const regexMail = /^[A-Za-z0-9+_.-]+@(.+)$/;
@@ -242,7 +243,7 @@ function isFormInvalid() {
   } else {
     emailErrorMsg.innerHTML = "";
   }
-
+  //si tout mes input son valide ses bon
   if (
     regexform.test(firstName) === true &&
     regexform.test(lastName) === true &&
@@ -264,6 +265,7 @@ function makeRequestBody() {
   const address = form.elements.address.value;
   const city = form.elements.city.value;
   const email = form.elements.email.value;
+  //envoie de toutes les donnes du forme aves les en plus les id du cache
   const body = {
     contact: {
       firstName: firstName,
@@ -279,7 +281,7 @@ function makeRequestBody() {
 //pour chaque canap dans mon cart recup les info et push l'id dans l'array ids
 /*return ids*/
 function getIdsFromCache() {
-  const ids = [];
+  const ids = []; //cree un tableau vide pour mes id
   cart.forEach((numberOfProducts) => {
     localStorage.getItem(localStorage.key(numberOfProducts)); //recupere les info du cache
     ids.push(numberOfProducts.id);
