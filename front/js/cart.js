@@ -179,7 +179,7 @@ function submitForm(e) {
     return;
   }
 
-  if (isFormInvalid()) return;
+  if (!isFormValid()) return;
 
   const body = makeRequestBody();
   fetch("http://localhost:3000/api/products/order", {
@@ -197,7 +197,7 @@ function submitForm(e) {
     .catch((err) => console.error(err));
 }
 //verifie si mon forme et valide avant de l'envoyer a mon api
-function isFormInvalid() {
+function isFormValid() {
   const firstName = document.querySelector("#firstName").value;
   const firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
   const lastName = document.querySelector("#lastName").value;
@@ -251,9 +251,9 @@ function isFormInvalid() {
     regexform.test(city) === true &&
     regexMail.test(email) === true
   ) {
-    return false;
-  } else {
     return true;
+  } else {
+    return false;
   }
 }
 //recupere les donner de mon forme et les mes en forme pour les passer a l'api
