@@ -1,70 +1,43 @@
 //accede a l'api
-fetch("http://localhost:3000/api/products")
-  .then((response) => response.json())
-  .then((data) => addProducts(data));
+const api = "http://localhost:3000/api/products";
 
-function addProducts(data) {
-  //joue la boucle pour chaque array dans l'api
-  data.forEach((kanap) => {
-    const { _id, imageUrl, altTxt, name, description } = kanap;
-    /*es6 destructuring sert a eviter de refaire la meme ligne pour chaque objets
-  const imageUrl = data.imageUrl;
-  const altTxt = data.altTxt;
-  const _id = data._id;
-  const name = data.name;
-  const description = data.description;*/
+fetch(api)
+    .then((response)         => response.json())
+    .then((items)            => {
+        items.forEach((item) => {
+            createProduct(item);
+        });
+    });
 
-    const anchor = makeanchor(_id); //cree l'element a
-    const makearticle = document.createElement("article"); //cree l'element article
-    const img = makeimg(imageUrl, altTxt); //cree l'element img
-    const h3 = makeh3(name); //cree l'element img
-    const p = makep(description); //cree l'element img
+/**
+ * creation de mes carte de produit
+ *
+ * @param {*} item
+ * @returns void
+ */
+function createProduct(item) 
+{
+    let description = document.createElement("p");
+    description.classList.add("productDescription");
+    description.textContent = item.description;
 
-    appendChildanchor(anchor, makearticle); //appelle la fonction qui acroche anchor a l'id items
-    appendChildtoarticle(makearticle, img, h3, p); //appelle la fonctin qui acroche [img, h3, p] a l'article mis en array pour pouvoir faire que un seul appenchild
-  });
-}
-//creation de l'element a
-function makeanchor(_id) {
-  const anchor = document.createElement("a"); //cree l'element a
-  anchor.href = "./product.html?id=" + _id; //met le href sur le a
-  return anchor;
-}
+    let title = document.createElement("h3");
+    title.classList.add("productName");
+    title.textContent = item.name;
 
-//creation de l'element img
-function makeimg(imageUrl, altTxt) {
-  const img = document.createElement("img"); //cree l'element img
-  img.src = imageUrl; //importe le src du back
-  img.alt = altTxt; //importe  le alt du back
-  return img;
-}
+    let image = document.createElement("img");
+    image.src = item.imageUrl;
+    image.alt = item.altTxt;
 
-//creation de l'element h3
-function makeh3(name) {
-  const h3 = document.createElement("h3"); //cree l'element h3
-  h3.classList.add("productName"); //ajoute comme nom de class productName
-  h3.textContent = name; //importe le textContent de h3
-  return h3;
-}
+    let article = document.createElement("article");
+    article.appendChild(image);
+    article.appendChild(title);
+    article.appendChild(description);
 
-//creation de l'element p
-function makep(description) {
-  const p = document.createElement("p"); //cree l'element p
-  p.classList.add("productDescription"); //ajoute comme nom de class productDescription
-  p.textContent = description; //importe le textContent de p
-  return p;
-}
+    let link  = document.createElement("a");
+    link.href = "./product.html?id=" + item._id;
+    link.appendChild(article);
 
-//mise en place de mon anchor et de mon article
-function appendChildanchor(anchor, makearticle) {
-  const items = document.getElementById("items"); //vise l'id items
-  items.appendChild(anchor); //lui donner l'enfant anchor
-  anchor.appendChild(makearticle); //acroche l'arcticle au anchor
-}
-
-//accroche les img,h3 et p à mon article
-function appendChildtoarticle(makearticle, img, h3, p) {
-  makearticle.appendChild(img); //acroche le p le h3 et img au arcticle
-  makearticle.appendChild(h3); //acroche le p le h3 et img au arcticle
-  makearticle.appendChild(p); //acroche le p le h3 et img au arcticle
+    let target = document.getElementById("items");
+    target.appendChild(link);
 }
