@@ -12,7 +12,7 @@ fetch(api)
 /**
  * creation de mes carte de produit
  *
- * @param {*} item
+ * @param object item
  * @returns void
  */
 function createProduct(item) 

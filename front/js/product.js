@@ -1,7 +1,7 @@
 //recuperation de mon id
-const queryString = window.location.search;
-const urlParams   = new URLSearchParams(queryString);
-const id          = urlParams.get("id");
+const queryString = window.location.search;//Pour récupérais se qu’il y a âpres le ? dans l'url 
+const urlParams   = new URLSearchParams(queryString);//je récupère les params de l'url 
+const id          = urlParams.get("id");//je recupere mon id dans l'url
 
 //mon fetch avec l'id recuperais de l'url
 fetch(`http://localhost:3000/api/products/${id}`)
@@ -60,7 +60,7 @@ function addToCartClick()
 {
     const color    = document.querySelector("#colors").value;
     const quantity = document.querySelector("#quantity").value;
-    if (isOrderValid(color, quantity)) return;
+    if (isOrderValid(color, quantity)) return;//condition qui veille a se que les champs soient remplis
 
     let cart = [];
 
@@ -73,11 +73,11 @@ function addToCartClick()
         name    : articleName,
     };
 
-    if (localStorage.getItem("cart")) {
-        cart = JSON.parse(localStorage.getItem("cart"));
-        for (let i = 0; i < cart.length; i++) {
-            if (cart[i].id === product.id && cart[i].color === product.color) {
-                cart[i].quantity += product.quantity;
+    if (localStorage.getItem("cart")) {//regarde si le local storage contien un cart
+        cart = JSON.parse(localStorage.getItem("cart"));//je parse mon cart car dans le local storage ne peut y avoir que des string le parse me sert à avoir des donner complexe 
+        for (let i = 0; i < cart.length; i++) {//verifie sur chaque produit dans mon panier
+            if (cart[i].id === product.id && cart[i].color === product.color) {//si j'ai un produit qui a le meme id et la meme couleur
+                cart[i].quantity += product.quantity;//si oui j'additionne la quantiter a celle existante
                 return savecart(cart);
             }
         }
@@ -109,7 +109,7 @@ function isOrderValid(color, quantity)
  */
 function savecart(cart) 
 {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));//je converti mon tableau en string pour pouvoir le stocker dans le local storage
 
     let result = confirm("vous allez etre rediriger vers le panier?");
 

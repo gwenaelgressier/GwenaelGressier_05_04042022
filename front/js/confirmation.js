@@ -10,9 +10,9 @@ removeAllCache();
  */
 function getOrderId() 
 {
-    const queryString = window.location.search;
-    const urlParams   = new URLSearchParams(queryString);
-    return urlParams.get("orderId");
+    const queryString = window.location.search;//Pour récupérais se qu’il y a âpres le ? dans l'url 
+    const urlParams   = new URLSearchParams(queryString);//je récupère les params de l'url 
+    return urlParams.get("orderId");//je recupere mon numero de commande
 }
 
 /**
