@@ -235,7 +235,7 @@ function submitForm(e)
 //declaration de mes regex
 const regexform   = /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;//accepte tout sauf ce qu'il y a ans ma 2em expression
 const regexAdress = /^[#.0-9a-zA-Zëêéèàçïîôö'\s,-]+$/;
-const regexMail   = /^[a-zA-Z.0-9]+@+[a-zA-Z]+.+[a-zA-Z]$/;
+const regexMail   = /^[a-zA-Z.0-9]+@+[a-zA-Z]+\.[a-zA-Z]+$/;
 
 //parametres de mes form
 const fields = [
