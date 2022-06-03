@@ -1,44 +1,35 @@
 //declare ma const cart vide pour cree une liste total du cart
 const cart = [];
+
 //adresse de mon api
 const endPoint = "http://localhost:3000/api/products/";
+
 //appelle e la fonction de recuperation des donnee
 retrieveItemsFromCache();
 
 //initialisation de totalQuantity
-const Quantity      = document.getElementById("totalQuantity");
+const Quantity = document.getElementById("totalQuantity");
 Quantity.textContent = 0;
 
 //initialisation de totalQuantity
-const price      = document.getElementById("totalPrice");
+const price = document.getElementById("totalPrice");
 price.textContent = 0;
-
-
-let itemprice=0;
-let total =0;
-let test =0;
 
 //afiche les items de mon cart
 cart.forEach(async (item) => {
-    await itemsprice(item)
-
-test+=itemprice*item.quantity
-
-displayItem(item);
+    await itemsprice(item);
+    displayItem(item);
+    item.price = itemprice;
 });
 
-
-
-
-async function itemsprice(item){
-    const api       = `${endPoint}${item.id}`;
-   await fetch(api).then((response) => response.json())
-            .then((i) => { itemprice = i.price})}
-
-
-
-
-
+async function itemsprice(item) {
+    const api = `${endPoint}${item.id}`;
+    await fetch(api)
+        .then((response) => response.json())
+        .then((i) => {
+            itemprice = i.price;
+        });
+}
 
 //instruction lors du click de mon bouton commander
 const orderButton = document.querySelector("#order");
@@ -49,11 +40,10 @@ orderButton.addEventListener("click", (e) => submitForm(e));
  *
  * @returns void
  */
-function retrieveItemsFromCache()
-{
+function retrieveItemsFromCache() {
     const numberOfItems = localStorage.length;
     for (let i = 0; i < numberOfItems; i++) {
-        const item       = localStorage.getItem(localStorage.key(i));
+        const item = localStorage.getItem(localStorage.key(i));
         const itemObject = JSON.parse(item);
         cart.push(...itemObject);
     }
@@ -65,19 +55,18 @@ function retrieveItemsFromCache()
  * @param object item
  * @returns void
  */
-function displayItem(item) 
-{
+function displayItem(item) {
     const article = document.createElement("article");
     article.classList.add("cart__item");
-    article.dataset.id    = item.id;
+    article.dataset.id = item.id;
     article.dataset.color = item.color;
     document.getElementById("cart__items").appendChild(article);
 
     const divImg = document.createElement("div");
     divImg.classList.add("cart__item__img");
     const image = document.createElement("img");
-    image.src   = item.imageUrl;
-    image.alt   = item.altTxt;
+    image.src = item.imageUrl;
+    image.alt = item.altTxt;
     article.appendChild(divImg).appendChild(image);
 
     const divCartItemcontent = document.createElement("div");
@@ -86,17 +75,15 @@ function displayItem(item)
     const description = document.createElement("div");
     description.classList.add("cart__item__content__description");
 
-    const titleName       = document.createElement("h2");
+    const titleName = document.createElement("h2");
     titleName.textContent = item.name;
 
-    const paragraphColor       = document.createElement("p");
+    const paragraphColor = document.createElement("p");
     paragraphColor.textContent = item.color;
 
-
-        const paragraphPrice       = document.createElement("p");
-        paragraphPrice.textContent = itemprice + " €";
-        description.appendChild(paragraphPrice);
-    
+    const paragraphPrice = document.createElement("p");
+    paragraphPrice.textContent = itemprice + " €";
+    description.appendChild(paragraphPrice);
 
     description.appendChild(titleName);
     description.appendChild(paragraphColor);
@@ -113,16 +100,16 @@ function displayItem(item)
     );
     divCartItemcontentSettings.appendChild(divItemContentSettingsQuantity);
 
-    const paragraphQuantity       = document.createElement("p");
+    const paragraphQuantity = document.createElement("p");
     paragraphQuantity.textContent = "Qté : ";
     divItemContentSettingsQuantity.appendChild(paragraphQuantity);
 
     const inputNumber = document.createElement("input");
-    inputNumber.type  = "number";
+    inputNumber.type = "number";
     inputNumber.classList.add("itemQuantity");
-    inputNumber.name  = "itemQuantity";
-    inputNumber.min   = 1;
-    inputNumber.max   = 100;
+    inputNumber.name = "itemQuantity";
+    inputNumber.min = 1;
+    inputNumber.max = 100;
     inputNumber.value = item.quantity;
     inputNumber.addEventListener("input", () =>
         updatePriceAndQuantity(inputNumber.value, item)
@@ -140,7 +127,7 @@ function displayItem(item)
     divDelete.appendChild(paragraphDelete);
     divDelete.addEventListener("click", () => deleteItem(item));
 
-
+    item.price = itemprice;
     displayTotalPrice(item);
     displayTotalQuantity();
 }
@@ -150,20 +137,17 @@ function displayItem(item)
  *
  * @param string newValue
  * @param object item
- * @param promise 
+ * @param promise
  * @return void
  */
-function updatePriceAndQuantity(newValue, item) 
-{
-    const itemToUpdate    = item;
+function updatePriceAndQuantity(newValue, item) {
+    const itemToUpdate = item;
     itemToUpdate.quantity = Number(newValue);
-    item.quantity         = itemToUpdate.quantity;
+    item.quantity = itemToUpdate.quantity;
 
     displayTotalQuantity();
-    displayTotalPrice(item);
+    displayTotalPrice();
     saveNewDataToCache();
-    location.reload();
-
 }
 
 /**
@@ -171,8 +155,7 @@ function updatePriceAndQuantity(newValue, item)
  *
  * @return void
  */
-function displayTotalQuantity() 
-{
+function displayTotalQuantity() {
     const totalQuantity = cart.reduce(
         (total, item) => (total += item.quantity),
         0
@@ -183,13 +166,16 @@ function displayTotalQuantity()
 /**
  * affiche la somme de tout les prix de mes canaps
  *
- * @param promise 
+ * @param promise
  * @returns void
  */
-function displayTotalPrice(item) 
-{
-        total=test
-        price.textContent = total;
+function displayTotalPrice() {
+    const totalPrice = document.querySelector("#totalPrice");
+    const total = cart.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+    );
+    totalPrice.textContent = total;
 }
 
 /**
@@ -197,8 +183,7 @@ function displayTotalPrice(item)
  *
  * @returns void
  */
-function saveNewDataToCache() 
-{
+function saveNewDataToCache() {
     localStorage.setItem("cart", JSON.stringify(cart)); //permet d'enregistrer avec l'id et la couleur
 }
 
@@ -206,11 +191,10 @@ function saveNewDataToCache()
  * fonction de suppression
  *
  * @param object item
- * @param promise 
+ * @param promise
  * @returns void
  */
-function deleteItem(item) 
-{
+function deleteItem(item) {
     const key = `${item.id}-${item.color}`;
     localStorage.removeItem(key);
     const itemToDelete = cart.findIndex(
@@ -223,9 +207,7 @@ function deleteItem(item)
     articleToDelete.remove();
     saveNewDataToCache();
     displayTotalQuantity();
-    displayTotalPrice();
-    location.reload();
-
+    displayTotalPrice(item.price);
 }
 
 /**
@@ -234,8 +216,7 @@ function deleteItem(item)
  * @param object e
  * @returns void
  */
-function submitForm(e) 
-{
+function submitForm(e) {
     e.preventDefault();
     if (cart.length === 0) {
         alert("Le panier est vide");
@@ -254,42 +235,42 @@ function submitForm(e)
     })
         .then((res) => res.json())
         .then((data) => {
-            const orderId        = data.orderId;
+            const orderId = data.orderId;
             window.location.href = "confirmation.html" + "?orderId=" + orderId;
         })
         .catch((err) => console.error(err));
 }
 
 //declaration de mes regex
-const regexform   = /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;//accepte tout sauf ce qu'il y a ans ma 2em expression
+const regexform = /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/; //accepte tout sauf ce qu'il y a ans ma 2em expression
 const regexAdress = /^[#.0-9a-zA-Zëêéèàçïîôö'\s,-]+$/;
-const regexMail   = /^[a-zA-Z.0-9]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+const regexMail = /^[a-zA-Z.0-9]+@[a-zA-Z]+\.[a-zA-Z]+$/;
 
 //parametres de mes form
 const fields = [
     {
-        name    : "firstName",
-        regex   : regexform,
+        name: "firstName",
+        regex: regexform,
         errorMsg: "entrez un prenom valide",
     },
     {
-        name    : "lastName",
-        regex   : regexform,
+        name: "lastName",
+        regex: regexform,
         errorMsg: "entrez un nom valide",
     },
     {
-        name    : "address",
-        regex   : regexAdress,
+        name: "address",
+        regex: regexAdress,
         errorMsg: "entrez une adresse valide",
     },
     {
-        name    : "city",
-        regex   : regexform,
+        name: "city",
+        regex: regexform,
         errorMsg: "entrez une ville valide",
     },
     {
-        name    : "email",
-        regex   : regexMail,
+        name: "email",
+        regex: regexMail,
         errorMsg: "entrez une email valide",
     },
 ];
@@ -299,8 +280,7 @@ const fields = [
  *
  * @returns boolean
  */
-function formIsValide() 
-{
+function formIsValide() {
     let error = false;
     fields.forEach((field) => {
         let value = document.querySelector(`#${field.name}`).value;
@@ -321,15 +301,14 @@ function formIsValide()
  *
  * @returns object body
  */
-function makeRequestBody() 
-{
-    const form      = document.querySelector(".cart__order__form");
+function makeRequestBody() {
+    const form = document.querySelector(".cart__order__form");
     const firstName = form.elements.firstName.value;
-    const lastName  = form.elements.lastName.value;
-    const address   = form.elements.address.value;
-    const city      = form.elements.city.value;
-    const email     = form.elements.email.value;
-    const body      = {
+    const lastName = form.elements.lastName.value;
+    const address = form.elements.address.value;
+    const city = form.elements.city.value;
+    const email = form.elements.email.value;
+    const body = {
         contact: {
             firstName: firstName,
             lastName: lastName,
@@ -347,8 +326,7 @@ function makeRequestBody()
  *
  * @returns array ids
  */
-function getIdsFromCache() 
-{
+function getIdsFromCache() {
     const ids = [];
     cart.forEach((numberOfProducts) => {
         localStorage.getItem(localStorage.key(numberOfProducts));
