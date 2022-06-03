@@ -5,8 +5,40 @@ const endPoint = "http://localhost:3000/api/products/";
 //appelle e la fonction de recuperation des donnee
 retrieveItemsFromCache();
 
+//initialisation de totalQuantity
+const Quantity      = document.getElementById("totalQuantity");
+Quantity.textContent = 0;
+
+//initialisation de totalQuantity
+const price      = document.getElementById("totalPrice");
+price.textContent = 0;
+
+
+let itemprice=0;
+let total =0;
+let test =0;
+
 //afiche les items de mon cart
-cart.forEach((item) => displayItem(item));
+cart.forEach(async (item) => {
+    await itemsprice(item)
+
+test+=itemprice*item.quantity
+
+displayItem(item);
+});
+
+
+
+
+async function itemsprice(item){
+    const api       = `${endPoint}${item.id}`;
+   await fetch(api).then((response) => response.json())
+            .then((i) => { itemprice = i.price})}
+
+
+
+
+
 
 //instruction lors du click de mon bouton commander
 const orderButton = document.querySelector("#order");
@@ -60,14 +92,11 @@ function displayItem(item)
     const paragraphColor       = document.createElement("p");
     paragraphColor.textContent = item.color;
 
-    const api       = `${endPoint}${item.id}`;
-    const itemFetch = fetch(api).then((response) => response.json());
-    console.log(itemFetch);
-    itemFetch.then((i) => {
+
         const paragraphPrice       = document.createElement("p");
-        paragraphPrice.textContent = i.price + " €";
+        paragraphPrice.textContent = itemprice + " €";
         description.appendChild(paragraphPrice);
-    });
+    
 
     description.appendChild(titleName);
     description.appendChild(paragraphColor);
@@ -96,7 +125,7 @@ function displayItem(item)
     inputNumber.max   = 100;
     inputNumber.value = item.quantity;
     inputNumber.addEventListener("input", () =>
-        updatePriceAndQuantity(inputNumber.value, item, itemFetch)
+        updatePriceAndQuantity(inputNumber.value, item)
     );
 
     divItemContentSettingsQuantity.appendChild(inputNumber);
@@ -109,9 +138,10 @@ function displayItem(item)
     paragraphDelete.classList.add("deleteItem");
     paragraphDelete.textContent = "Supprimer";
     divDelete.appendChild(paragraphDelete);
-    divDelete.addEventListener("click", () => deleteItem(item, itemFetch));
+    divDelete.addEventListener("click", () => deleteItem(item));
 
-    displayTotalPrice(itemFetch);
+
+    displayTotalPrice(item);
     displayTotalQuantity();
 }
 
@@ -120,17 +150,20 @@ function displayItem(item)
  *
  * @param string newValue
  * @param object item
- * @param promise itemFetch
+ * @param promise 
  * @return void
  */
-function updatePriceAndQuantity(newValue, item, itemFetch) 
+function updatePriceAndQuantity(newValue, item) 
 {
     const itemToUpdate    = item;
     itemToUpdate.quantity = Number(newValue);
     item.quantity         = itemToUpdate.quantity;
+
     displayTotalQuantity();
-    displayTotalPrice(itemFetch);
+    displayTotalPrice(item);
     saveNewDataToCache();
+    location.reload();
+
 }
 
 /**
@@ -140,7 +173,6 @@ function updatePriceAndQuantity(newValue, item, itemFetch)
  */
 function displayTotalQuantity() 
 {
-    const Quantity      = document.getElementById("totalQuantity");
     const totalQuantity = cart.reduce(
         (total, item) => (total += item.quantity),
         0
@@ -151,19 +183,13 @@ function displayTotalQuantity()
 /**
  * affiche la somme de tout les prix de mes canaps
  *
- * @param promise itemFetch
+ * @param promise 
  * @returns void
  */
-function displayTotalPrice(itemFetch) 
+function displayTotalPrice(item) 
 {
-    itemFetch.then((i) => {
-        const price      = document.getElementById("totalPrice");
-        const totalprice = cart.reduce(
-            (total, item) => total + i.price * item.quantity,
-            0
-        );
-        price.textContent = totalprice;
-    });
+        total=test
+        price.textContent = total;
 }
 
 /**
@@ -180,10 +206,10 @@ function saveNewDataToCache()
  * fonction de suppression
  *
  * @param object item
- * @param promise itemFetch
+ * @param promise 
  * @returns void
  */
-function deleteItem(item, itemFetch) 
+function deleteItem(item) 
 {
     const key = `${item.id}-${item.color}`;
     localStorage.removeItem(key);
@@ -197,7 +223,9 @@ function deleteItem(item, itemFetch)
     articleToDelete.remove();
     saveNewDataToCache();
     displayTotalQuantity();
-    displayTotalPrice(itemFetch);
+    displayTotalPrice();
+    location.reload();
+
 }
 
 /**
@@ -235,7 +263,7 @@ function submitForm(e)
 //declaration de mes regex
 const regexform   = /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;//accepte tout sauf ce qu'il y a ans ma 2em expression
 const regexAdress = /^[#.0-9a-zA-Zëêéèàçïîôö'\s,-]+$/;
-const regexMail   = /^[a-zA-Z.0-9]+@+[a-zA-Z]+\.[a-zA-Z]+$/;
+const regexMail   = /^[a-zA-Z.0-9]+@[a-zA-Z]+\.[a-zA-Z]+$/;
 
 //parametres de mes form
 const fields = [
