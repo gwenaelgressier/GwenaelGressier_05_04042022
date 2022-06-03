@@ -19,9 +19,14 @@ price.textContent = 0;
 cart.forEach(async (item) => {
     await itemsprice(item);
     displayItem(item);
-    item.price = itemprice;
 });
 
+/**
+ *function qui fetch mon api pour recuperais le prix de mon canap
+ *
+ * @param object item
+ * @returns void
+ */
 async function itemsprice(item) {
     const api = `${endPoint}${item.id}`;
     await fetch(api)
@@ -137,7 +142,6 @@ function displayItem(item) {
  *
  * @param string newValue
  * @param object item
- * @param promise
  * @return void
  */
 function updatePriceAndQuantity(newValue, item) {
@@ -166,7 +170,6 @@ function displayTotalQuantity() {
 /**
  * affiche la somme de tout les prix de mes canaps
  *
- * @param promise
  * @returns void
  */
 function displayTotalPrice() {
@@ -191,7 +194,6 @@ function saveNewDataToCache() {
  * fonction de suppression
  *
  * @param object item
- * @param promise
  * @returns void
  */
 function deleteItem(item) {
